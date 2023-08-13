@@ -2,20 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
 import '../models/meals.dart';
+import 'meal_item_trait.dart';
 
 class MealItem extends StatelessWidget {
   const MealItem({
-    super.key,
+    Key? key,
     required this.meal,
-  });
+    required this.onSelectMeal,
+  }) : super(key: key);
 
   final Meal meal;
+  final void Function(Meal meal) onSelectMeal;
 
+  // Returns the capitalized complexity text
   String get complexityText {
     return meal.complexity.name[0].toUpperCase() +
         meal.complexity.name.substring(1);
   }
 
+  // Returns the capitalized affordability text
   String get affordabilityText {
     return meal.affordability.name[0].toUpperCase() +
         meal.affordability.name.substring(1);
@@ -31,12 +36,15 @@ class MealItem extends StatelessWidget {
       clipBehavior: Clip.hardEdge,
       elevation: 2,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          onSelectMeal(meal);
+        },
         child: Stack(
           children: [
-            FadeInImage(
-              placeholder: MemoryImage(kTransparentImage),
-              image: NetworkImage(meal.imageUrl),
+            // Display the meal image with a fading transition
+            FadeInImage.memoryNetwork(
+              placeholder: kTransparentImage,
+              image: meal.imageUrl,
               fit: BoxFit.cover,
               height: 200,
               width: double.infinity,
@@ -51,38 +59,42 @@ class MealItem extends StatelessWidget {
                     const EdgeInsets.symmetric(vertical: 6, horizontal: 44),
                 child: Column(
                   children: [
+                    // Display the meal title
                     Text(
                       meal.title,
                       maxLines: 2,
                       textAlign: TextAlign.center,
                       softWrap: true,
-                      overflow: TextOverflow.ellipsis, // Very long text ...
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    // const SizedBox(height: 12),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.center,
-                    //   children: [
-                    //     MealItemTrait(
-                    //       icon: Icons.schedule,
-                    //       label: '${meal.duration} min',
-                    //     ),
-                    //     const SizedBox(width: 12),
-                    //     MealItemTrait(
-                    //       icon: Icons.work,
-                    //       label: complexityText,
-                    //     ),
-                    //     const SizedBox(width: 12),
-                    //     MealItemTrait(
-                    //       icon: Icons.attach_money,
-                    //       label: affordabilityText,
-                    //     )
-                    //   ],
-                    // ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Display the meal duration
+                        MealItemTrait(
+                          icon: Icons.schedule,
+                          label: '${meal.duration} min',
+                        ),
+                        const SizedBox(width: 12),
+                        // Display the meal complexity
+                        MealItemTrait(
+                          icon: Icons.work,
+                          label: complexityText,
+                        ),
+                        const SizedBox(width: 12),
+                        // Display the meal affordability
+                        MealItemTrait(
+                          icon: Icons.attach_money,
+                          label: affordabilityText,
+                        )
+                      ],
+                    ),
                   ],
                 ),
               ),

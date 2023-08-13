@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 
-
 import '../models/meals.dart';
 import '../widgets/meal_item.dart';
+import 'meals_details.dart';
 
 class MealsScreen extends StatelessWidget {
   const MealsScreen({
-    super.key,
+    Key? key,
     required this.title,
     required this.meals,
-  });
+  }) : super(key: key);
 
   final String title;
   final List<Meal> meals;
 
+  void selectMeal(BuildContext context, Meal meal) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (ctx) => MealDetailsScreen(
+          meal: meal,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Default content in case there are no meals
     Widget content = Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -37,10 +48,16 @@ class MealsScreen extends StatelessWidget {
       ),
     );
 
+    // If there are meals available, display them using ListView.builder
     if (meals.isNotEmpty) {
       content = ListView.builder(
         itemCount: meals.length,
-       itemBuilder: (ctx, index) => MealItem(meal: meals[index]),
+        itemBuilder: (ctx, index) => MealItem(
+          meal: meals[index],
+          onSelectMeal: (meal) {
+            selectMeal(context, meal);
+          },
+        ),
       );
     }
 
@@ -48,7 +65,7 @@ class MealsScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(title),
       ),
-      body: content,
+      body: content, // Display the content based on meals availability
     );
   }
 }
